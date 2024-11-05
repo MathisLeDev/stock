@@ -3,7 +3,7 @@ import React from 'react';
 const MarketInfo = (props) => {
     const {exchange} = props;
     return (
-        <div className={'card bg-base-200  rounded-lg p-6'}>
+        <div className={'card bg-base-200  rounded-lg p-6 flex-[0.5]'}>
 
             {exchange && <>
                 <h1 className={'text-4xl font-semibold'}>
