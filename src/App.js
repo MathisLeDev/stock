@@ -25,6 +25,8 @@ function App() {
         setSelectedExchange(exchange);
     }
 
+
+
     return (<div>
             <Navbar />
             <Drawer />
