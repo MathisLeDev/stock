@@ -5,6 +5,20 @@ const axiosInstance = axios.create({
     timeout: process.env.REACT_APP_TIMEOUT ? parseInt(process.env.EXPO_AXIOS_TIMEOUT) : 10000,
 });
 
+axiosInstance.interceptors.request.use( (config) => {
+    // Do something before request is sent
+    const token = JSON.parse(localStorage.getItem('user') || '{}');
+
+    if (token) {
+        config.headers.Authorization = `Bearer ${token.token}`;
+    }
+    console.log('REQUEST: ', config.headers.Authorization);
+
+    return config;
+},  (error) => {
+    // Do something with request error
+    return Promise.reject(error);
+});
 
 /**
  * Executed before each request

@@ -1,12 +1,17 @@
 import React, {useEffect} from 'react';
 import Search from "../input/Search";
 import CoinCapAxiosInstance from "../../axios/CoinCapAxiosInstance";
+import {getUser} from "../../utils/userUtils";
+import {useNavigate} from "react-router-dom";
 
 const Navbar = () => {
+    const user = getUser()
+    const navigate = useNavigate()
     const [searchValue, setSearchValue] = React.useState('');
     const [searchResults, setSearchResults] = React.useState();
     const [isError, setIsError] = React.useState(false);
     const [isLoading, setIsLoading] = React.useState(false);
+    const [userCardOpen, setUserCardOpen] = React.useState(false);
 
     useEffect(() => {
         if (searchValue.length > 0) {
@@ -40,6 +45,12 @@ const Navbar = () => {
             setSearchResults();
         }
         setSearchValue(e.target.value);
+    }
+
+    const logout = () => {
+        localStorage.removeItem('user');
+        navigate('/login')
+
     }
 
     return (
@@ -126,7 +137,34 @@ const Navbar = () => {
                     <Search value={searchValue} onChange={(e) => onChange(e)}/>
                 </div>
 
-                <a className="btn">Button</a>
+                <div className=" border btn  h-10 w-10 inset-0" onClick={() => setUserCardOpen(true)}>
+                    {user?.user.firstName[0] || ''}
+                    {user?.user.lastName[0] || ''}
+                </div>
+
+                {userCardOpen && (
+                    <>
+                        <div className={'fixed top-0 right-0 left-0 bottom-0 bg-black/30 z-10'}
+                             onClick={() => setUserCardOpen(false)}/>
+                        <div
+                            className={`flex card absolute flex-col gap-2 items-center bg-base-100 px-12 py-4 z-20 top-[72px] right-4 rounded-md shadow`}
+                        >
+
+                            <div className={'text-xl font-semibold h-20 w-20 rounded-full border flex items-center justify-center'}>
+                                {user?.user.firstName[0] || ''}
+                                {user?.user.lastName[0] || ''}
+                            </div>
+                            <div className="flex flex-row items-center">
+                                <span className="text-xl">{user.user.firstName} {user.user.lastName}</span>
+                            </div>
+
+                            <div onClick={logout}
+                                 className={'btn'}>
+                                Déconnexion
+                            </div>
+                        </div>
+                    </>
+                )}
             </div>
 
 

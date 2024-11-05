@@ -8,38 +8,30 @@ import {TempAssetsData} from "./tempData/TempAssetsData";
 import ArrayWithTitle from "./components/arrayWithTitle/ArrayWithTitle";
 import MarketGraph from "./components/graphs/MarketGraph";
 import MarketInfo from "./components/market/MarketInfo";
+import {createBrowserRouter, RouterProvider} from "react-router-dom";
+import Root from "./pages/Root";
+import Login from "./pages/login/Login";
 
 function App() {
-    const [assets, setAssets] = useState([]);
-    const [selectedExchange, setSelectedExchange] = useState(null);
-
-    useEffect(() => {
-        setAssets(TempAssetsData);
-        /*coinCapAxiosInstance.get('exchanges').then(response => {
-            console.log('response: ', response);
-            setExchanges(response.data.data);
-        })*/
-    }, []);
-
-    const handleOnSelect = (exchange) => {
-        setSelectedExchange(exchange);
-    }
 
 
+    const router = createBrowserRouter([
+        {
+            path: "/",
+            element: <Root />,
+            children: [
+                {
+                    path: "/login",
+                    element: <Login />,
+                }]
+        }
+    ]);
 
-    return (<div>
-            <Navbar />
-            <Drawer />
-            <div className={'flex flex-col gap-6 px-10'}>
-                <div className={'flex flex-row gap-4'}>
-                    <MarketGraph title={selectedExchange?.name || ''}/>
-                    <MarketInfo exchange={selectedExchange}/>
-                </div>
-                <ArrayWithTitle title={"Market"} array={assets} onSelect={handleOnSelect}/>
-            </div>
-            <Footer />
-        </div>
+    return (
+            <RouterProvider router={router} />
     );
+
+
 }
 
 export default App;

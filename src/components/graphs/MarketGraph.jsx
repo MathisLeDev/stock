@@ -1,10 +1,7 @@
 import React, {useEffect, useState} from 'react';
 import {
     Area,
-    AreaChart,
-    Bar,
-    CartesianGrid,
-    ComposedChart, Line, LineChart,
+    AreaChart, ReferenceLine,
     ResponsiveContainer,
     Tooltip,
     XAxis,
@@ -12,14 +9,39 @@ import {
 } from "recharts";
 import CoinCapAxiosInstance from "../../axios/CoinCapAxiosInstance";
 import {TempCandlesData} from "../../tempData/TempCandlesData";
+import AxiosInstance from "../../axios/AxiosInstance";
+import axiosInstance from "../../axios/AxiosInstance";
+import {addAlert} from "../../rxjs/services/alertService";
 
 
 
 const MarketGraph = (props) => {
-    const {title} = props;
+    const {selectedAsset} = props;
     const [candleData, setCandleData] = useState([]);
     const [isLoading, setIsLoading] = useState(true);
     const [interval, setSelectedInterval] = useState('1m');
+    const [marketAlerts, setMarketAlerts] = useState([]);
+
+
+    const fetchForAlerts = () => {
+        setIsLoading(true);
+        AxiosInstance.get('/alert?companyName='+selectedAsset.id).then(response => {
+            setMarketAlerts(response.data);
+        }).catch(error => {
+            console.log('error: ', error);
+        }).finally(() => {
+            setIsLoading(false);
+        })
+    }
+
+    useEffect(() => {
+        if(!selectedAsset) return;
+
+
+
+        fetchForAlerts();
+    }, [selectedAsset]);
+
 
     useEffect(() => {
         const fetchForCandlesData = () => {
@@ -47,6 +69,17 @@ const MarketGraph = (props) => {
         period: new Date(item.period).toLocaleDateString()
         //.format('DD/MM/YYYY') // Formate le timestamp pour un affichage en date
     }));
+
+    const handleRemoveAlert = (alert) => {
+        axiosInstance.patch('/alert?alertId='+alert.id).then(response => {
+            addAlert({type: 'success', message: 'Alert removed successfully'})
+            fetchForAlerts()
+        }).catch(error => {
+            addAlert({type: 'error', message: 'Error removing alert'})
+            console.error('error: ', error);
+        })
+    }
+
     return (
 
         <div className="card bg-base-200 p-6 rounded-lg flex-1">
@@ -75,6 +108,11 @@ const MarketGraph = (props) => {
                 <YAxis />
                 <Tooltip />
                 <Area type="monotone" dataKey="close" stroke="#82ca9d" fillOpacity={1} fill="url(#colorPv)" />
+                {/* Ligne de limite */}
+                {marketAlerts.map((alert, index) => (
+                    <ReferenceLine isFront key={index} y={alert.value} strokeWidth={2} stroke="red" onClick={()=>handleRemoveAlert(alert)}/>
+                ))}
+
             </AreaChart>
             </ResponsiveContainer>
 
