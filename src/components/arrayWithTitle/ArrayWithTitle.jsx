@@ -1,4 +1,5 @@
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
+import {marketWebSocketService$} from "../../rxjs/services/marketWebSocketService";
 
 const PAGE_SIZE = 10; // Nombre d'échanges par page
 const ArrayWithTitle = (props) => {
@@ -6,6 +7,21 @@ const ArrayWithTitle = (props) => {
     const [currentPage, setCurrentPage] = useState(0);
     const totalPages = Math.ceil(array.length / PAGE_SIZE) || 1;
     const displayedExchanges = array.slice(currentPage * PAGE_SIZE, (currentPage + 1) * PAGE_SIZE);
+    const [marketWebSocket, setMarketWebSocket] = useState(null);
+
+    useEffect(() => {
+        const sub = marketWebSocketService$.subscribe({
+            next: value => setMarketWebSocket(value),
+        });
+
+        return () => {
+            sub.unsubscribe();
+        }
+    }, []);
+
+    useEffect(() => {
+        console.log('marketWebSocket: ', marketWebSocket);
+    }, [marketWebSocket]);
 
 
 
@@ -20,7 +36,7 @@ const ArrayWithTitle = (props) => {
                         <th className={'flex flex-col'}><span className={'font-semibold my-auto text-xl'}>{exchange.rank}</span></th>
                         <td className={'flex flex-col flex-1'}><span className={'text-xs text-neutral'}>Price</span><span className={'font-semibold'}>{exchange.name}</span></td>
                         <td className={'flex flex-col flex-1'}><span className={'text-xs text-neutral'}>Change</span><span className={`${Number(exchange.changePercent24Hr) > 0 ? "text-green-500" : "text-red-500"}  font-semibold`}>{Number(exchange.changePercent24Hr).toFixed(2)}%</span></td>
-                        <td className={'flex flex-col '}><span className={'text-xs text-neutral'}>Current Value</span><span className={'font-semibold'}>${Number(exchange.priceUsd).toFixed(2)}</span></td>
+                        <td className={'flex flex-col '}><span className={'text-xs text-neutral'}>Current Value</span><span className={'font-semibold'}>{marketWebSocket[exchange.id] ? marketWebSocket[exchange.id] :  Number(exchange.priceUsd).toFixed(2)}$ </span></td>
                     </tr>
                 ))}
                 </tbody>

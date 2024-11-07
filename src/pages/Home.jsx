@@ -6,10 +6,12 @@ import MarketInfo from "../components/market/MarketInfo";
 import ArrayWithTitle from "../components/arrayWithTitle/ArrayWithTitle";
 import Footer from "../components/footer/Footer";
 import {TempAssetsData} from "../tempData/TempAssetsData";
+import {addMarket} from "../rxjs/services/marketWebSocketService";
 
 const Home = () => {
     const [assets, setAssets] = useState([]);
     const [selectedExchange, setSelectedExchange] = useState(null);
+
 
     useEffect(() => {
         setAssets(TempAssetsData);
@@ -17,6 +19,10 @@ const Home = () => {
             console.log('response: ', response);
             setExchanges(response.data.data);
         })*/
+        const pricesWs = new WebSocket('wss://ws.coincap.io/prices?assets=bitcoin,ethereum,monero,litecoin')
+        pricesWs.onmessage = function (msg) {
+            addMarket(JSON.parse(msg.data));
+        }
     }, []);
 
     const handleOnSelect = (exchange) => {

@@ -3,21 +3,23 @@ import axiosInstance from "../../axios/AxiosInstance";
 import {Link, useNavigate} from "react-router-dom";
 import {addAlert} from "../../rxjs/services/alertService";
 
-const Login = () => {
-    const navigate = useNavigate()
-    const [email, setEmail] = useState('');
-    const [password, setPassword] = useState('');
-    const [loading, setLoading] = useState(false);
-    const [error, setError] = useState();
+const Register = () => {
+    const [email, setEmail] = React.useState('');
+    const [password, setPassword] = React.useState('');
+    const [loading, setLoading] = React.useState(false);
+    const [error, setError] = React.useState();
+    const [firstName, setFirstName] = React.useState('');
+    const [lastName, setLastName] = React.useState('');
+    const navigate = useNavigate();
 
     const handleLogin = async (e) => {
         e.preventDefault();
-        const body = {email, password};
+        const body = {email, password, firstName, lastName};
         setLoading(true);
-        axiosInstance.post('login', body).then(response => {
-            addAlert({type: 'success', message: 'Login successful'})
+        axiosInstance.post('user', body).then(response => {
+            addAlert({type: 'success', message: 'Register successful'})
             localStorage.setItem('user', JSON.stringify(response.data));
-            navigate('/');
+            navigate('/login');
         }).catch(error => {
             setError(error);
             console.log('error: ', error);
@@ -29,7 +31,7 @@ const Login = () => {
     return (
         <div className="flex items-center justify-center min-h-screen bg-base-100">
             <div className="w-full max-w-sm p-6 shadow-md rounded-md bg-base-200">
-                <h2 className="mb-4 text-2xl font-semibold text-center">Login</h2>
+                <h2 className="mb-4 text-2xl font-semibold text-center">Register</h2>
                 {error && <div className="text-red-500 text-sm mb-4">{"Wrong credentials"}</div>}
                 <form onSubmit={handleLogin} className="space-y-4">
                     <div>
@@ -40,6 +42,28 @@ const Login = () => {
                             onChange={(e) => setEmail(e.target.value)}
                             className="input input-bordered w-full"
                             placeholder="Enter your email"
+                            required
+                        />
+                    </div>
+                    <div>
+                        <label className="block mb-1 text-sm font-medium text-gray-600">First name</label>
+                        <input
+                            type="text"
+                            value={firstName}
+                            onChange={(e) => setFirstName(e.target.value)}
+                            className="input input-bordered w-full"
+                            placeholder="Enter your first name"
+                            required
+                        />
+                    </div>
+                    <div>
+                        <label className="block mb-1 text-sm font-medium text-gray-600">Last name</label>
+                        <input
+                            type="text"
+                            value={lastName}
+                            onChange={(e) => setLastName(e.target.value)}
+                            className="input input-bordered w-full"
+                            placeholder="Enter your last name"
                             required
                         />
                     </div>
@@ -69,4 +93,4 @@ const Login = () => {
     );
 };
 
-export default Login;
+export default Register;
