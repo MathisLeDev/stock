@@ -14,6 +14,8 @@ const Home = () => {
 
 
     useEffect(() => {
+
+
         setAssets(TempAssetsData);
         /*coinCapAxiosInstance.get('exchanges').then(response => {
             console.log('response: ', response);
@@ -34,10 +36,12 @@ const Home = () => {
             <Navbar/>
             <Drawer/>
             <div className={'flex flex-col gap-6 px-10'}>
+                {selectedExchange &&
                 <div className={'flex flex-row gap-6'}>
                     <MarketGraph title={selectedExchange?.name || ''} selectedAsset={selectedExchange}/>
                     <MarketInfo exchange={selectedExchange}/>
                 </div>
+                }
                 <ArrayWithTitle title={"Market"} array={assets} onSelect={handleOnSelect}/>
             </div>
             <Footer/>

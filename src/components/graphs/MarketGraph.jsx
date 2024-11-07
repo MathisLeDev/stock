@@ -12,6 +12,8 @@ import {TempCandlesData} from "../../tempData/TempCandlesData";
 import AxiosInstance from "../../axios/AxiosInstance";
 import axiosInstance from "../../axios/AxiosInstance";
 import {addAlert} from "../../rxjs/services/alertService";
+import {addMarket, getMarketById} from "../../rxjs/services/marketWebSocketService";
+import {addMarketAlert, getMarketAlertsById, marketAlertService$} from "../../rxjs/services/marketAlertService";
 
 
 
@@ -26,7 +28,7 @@ const MarketGraph = (props) => {
     const fetchForAlerts = () => {
         setIsLoading(true);
         AxiosInstance.get('/alert?companyName='+selectedAsset.id).then(response => {
-            setMarketAlerts(response.data);
+            addMarketAlert(response.data);
         }).catch(error => {
             console.log('error: ', error);
         }).finally(() => {
@@ -36,12 +38,19 @@ const MarketGraph = (props) => {
 
     useEffect(() => {
         if(!selectedAsset) return;
-
-
-
         fetchForAlerts();
     }, [selectedAsset]);
 
+    useEffect(() => {
+        if(!selectedAsset) return;
+        const sub = marketAlertService$.subscribe((data) => {
+            setMarketAlerts(data);
+        });
+
+        return () => {
+            sub.unsubscribe();
+        }
+    }, [selectedAsset]);
 
     useEffect(() => {
         const fetchForCandlesData = () => {

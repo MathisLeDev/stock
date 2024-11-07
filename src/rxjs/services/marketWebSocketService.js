@@ -8,7 +8,7 @@ const initialState = {}
 const marketWebSocketService$ = new BehaviorSubject(initialState);
 
 const getMarketById = (id) => {
-    return marketWebSocketService$.getValue().find(market => market.id === id);
+    return marketWebSocketService$.getValue()[id];
 }
 
 const addMarket = (newMarketData) => {

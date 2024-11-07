@@ -19,12 +19,6 @@ const ArrayWithTitle = (props) => {
         }
     }, []);
 
-    useEffect(() => {
-        console.log('marketWebSocket: ', marketWebSocket);
-    }, [marketWebSocket]);
-
-
-
     return (
         <div className="overflow-x-auto bg-base-200 p-6 rounded-lg">
             <h2 className="text-2xl font-bold">{title}</h2>
